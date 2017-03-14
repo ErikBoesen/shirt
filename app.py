@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify
-from flask_pymongo import PyMongo
+from pymongo import MongoClient
 import json
 import random
 import string
@@ -8,13 +8,12 @@ import re
 app = Flask(__name__)
 mongo = PyMongo(app)
 
-
 @app.route('/new', methods=['POST'])
 def new():
     data = request.json
 
     if data.get('key') is not None:
-        if mongo.db.links.find_one({'key': data['key']}) is None:
+        if db.links.find_one({'key': data['key']}) is None:
             key = data['key']
         else:
             # TODO: This can be done more cleanly.
@@ -24,7 +23,7 @@ def new():
 
     url = re.sub(r'^https?://(www\.)?', '', data['url'])
     print('Creating link to %s at key %s...' % (url, key), end='')
-    mongo.db.links.insert({
+    db.links.insert({
         'key': key,
         'url': url
     })
@@ -35,10 +34,10 @@ def new():
 
 @app.route('/<key>')
 def link(key):
-    url = '//' + mongo.db.links.find_one_or_404({'key': key})['url']
+    url = '//' + db.links.find_one({'key': key})['url']
 
     return render_template('redir.html', url=url)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
