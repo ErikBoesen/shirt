@@ -14,17 +14,20 @@ Shirt - the simple, stylish, and self-hosted URL shortener.
 
         git clone https://github.com/ErikBoesen/shirt && cd shirt
 
+* (OPTIONAL) Spin up virtualenv and activate:
+
+        virtualenv venv && . venv/bin/activate
+
 * Install python dependencies:
 
         pip3 install -r requirements.txt
 
+* Rename `config-sample.json` to `config.json` and tweak as desired.
 * Start `mongod` (varies by system)
 * Run the app!
 
         python3 app.py
 
-## Deployment
-TODO
 
 ## Authors
 * [Erik Boesen](https://github.com/ErikBoesen)

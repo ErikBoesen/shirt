@@ -58,4 +58,6 @@ def link(key):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    with open('config.json') as f:
+        config = json.loads(f.read())
+    app.run(port=config['port'])
