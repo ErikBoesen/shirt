@@ -60,4 +60,4 @@ def link(key):
 if __name__ == '__main__':
     with open('config.json') as f:
         config = json.loads(f.read())
-    app.run(port=config['port'])
+    app.run(port=config['port'], host='0.0.0.0')
