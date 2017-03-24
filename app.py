@@ -9,9 +9,11 @@ import re
 app = Flask(__name__)
 mongo = PyMongo(app)
 
+
 @app.route('/')
 def home():
-    return render_template('index.html') #, top=mongo.db.collection.find().sort({uses:-1}).limit(10))
+    # TODO: It's quite innefficient to generate the list every time the page is visited. On a small scale it's nice, but it could get painful when scaled.
+    return render_template('index.html', top=list(mongo.db.links.find().sort([('uses', -1)]).limit(10)))
 
 
 @app.route('/new', methods=['POST'])
@@ -19,7 +21,7 @@ def new():
     data = request.json
 
     already = mongo.db.links.find_one({'url': data['url']})
-    if already is None: # If there's not yet a link to that page, then we're going to make one.
+    if already is None:  # If there's not yet a link to that page, then we're going to make one.
         if data.get('key') is not None:
             if mongo.db.links.find_one({'key': data['key']}) is None:
                 key = data['key']
@@ -27,14 +29,15 @@ def new():
                 # TODO: This can be done more cleanly.
                 return jsonify({'error': 409}), 409
         else:
-            key = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(0, 4)])
+            key = ''.join(
+                [random.choice(string.ascii_letters + string.digits) for i in range(0, 4)])
 
         url = re.sub(r'^https?://(www\.)?', '', data['url'])
         print('Creating link to %s at key %s...' % (url, key), end='')
         mongo.db.links.insert({
             'key': key,
             'url': url,
-            #'uses': 0
+            'uses': 0
         })
         print(' done.')
     else:
@@ -45,7 +48,11 @@ def new():
 
 @app.route('/<key>')
 def link(key):
-    url = '//' + mongo.db.links.find_one({'key': key})['url']
+    url = '//' + mongo.db.links.find_one_or_404({'key': key})['url']
+    mongo.db.links.update(
+        {'key': key},
+        {'$inc': {'uses': 1}}
+    )
 
     return render_template('redir.html', url=url)
 

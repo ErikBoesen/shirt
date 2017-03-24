@@ -3,11 +3,53 @@
 <head>
     <title>shirt</title>
     <style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html, body { height: 100%; }
+body {
+    background: linear-gradient(to top left, #a0d3e9, #31c6f5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-family: sans-serif;
+    font-size: 20px;
+}
+h1 {
+    font-size: 200px;
+}
+ul {
+    list-style: none;
+}
+li {
+    padding: 30px;
+    border-bottom: solid 1px white;
+}
+li:last-child {
+    border-bottom: none;
+}
+.number {
+    font-family: monospace;
+}
+
     </style>
 </head>
 <body>
-    <h1>You've reached a shirt-based URL shortener!</h1>
-    <p>This page won't take you anywhere. Instead, have a look at the most popular shirtlinks on this website.</p>
-    <p>{{ top }}</p>
+    <h1>shrt!</h1>
+    <p>This page won't take you anywhere. Instead, have a look at our most popular links.</p>
+    <ul>
+        {% for link in top %}
+            <li>
+                <span class="title">{{ link['key'] }}</span> - <span class="url">{{ link['url'] }}</span> - <span class="number">{{ link['uses'] }} uses</span>
+            </li>
+        {% endfor %}
+    </ul>
+
 </body>
 </html>
