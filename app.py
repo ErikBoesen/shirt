@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, redirect
 from flask_pymongo import PyMongo
 import json
 import random
@@ -29,8 +29,7 @@ def new():
                 # TODO: This can be done more cleanly.
                 return jsonify({'error': 409}), 409
         else:
-            key = ''.join(
-                [random.choice(string.ascii_letters + string.digits) for i in range(0, 4)])
+            key = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(0, 4)])
 
         url = re.sub(r'^https?://(www\.)?', '', data['url'])
         print('Creating link to %s at key %s...' % (url, key), end='')
@@ -54,10 +53,10 @@ def link(key):
         {'$inc': {'uses': 1}}
     )
 
-    return render_template('redir.html', url=url)
+    return redirect(url, code=301)
 
 
 if __name__ == '__main__':
     with open('config.json') as f:
         config = json.loads(f.read())
-    app.run(port=config['port'], host='0.0.0.0')
+    app.run(port=config['port'], host=config['host'], debug=config['debug'])
